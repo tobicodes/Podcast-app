@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center">
+  <h3>Hello @{{current_user.username}}</h3>
+
+  <p>Here are your current preferences:</p>
+  {% for preference in current_user.preferences %}
+  <p>{{preference}}</p>
+  {% endfor %}
+</div>
+
+
+{% endblock %}

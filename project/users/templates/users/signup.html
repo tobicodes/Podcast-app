@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center" id="signup">
+    <h3 class="join_message">Sign up today</h3>
+    <form action="{{url_for('users.signup')}}" method="POST">
+      {{form.csrf_token}}
+      {% if form.username.errors %}
+        {% for error in form.username.errors %}
+        <span class="text-danger">
+          {{error}}
+        </span>
+        {% endfor %}
+      {% endif %}
+      <p>{{ form.username(placeholder='Username') }}</p>
+      {% if form.email.errors %}
+        {% for error in form.email.errors %}
+        <span class="text-danger">
+          {{error}}
+        </span>
+        {% endfor %}
+      {% endif %}
+      <p>{{ form.email(placeholder='E-mail') }}</p>
+      {% if form.password.errors %}
+        {% for error in form.password.errors %}
+        <span class="text-danger">
+          {{error}}
+        </span>
+        {% endfor %}
+      {% endif %}
+      <p>{{ form.password(placeholder='Password') }}</p>
+      <input type="submit" value="Sign up!" id="signupsubmitbutton" class="btn btn-warning">
+    </form>
+</div>
+{% endblock %}
+

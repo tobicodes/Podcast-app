@@ -1,0 +1,73 @@
+body{
+  color: black;
+}
+
+.home{
+  width: 100%;
+  height:800px;
+  background-image: url('blue-pineapple.jpg');
+  background-size: cover;
+}
+
+.home-text{
+  color:white;
+  margin-top: 220px;
+}
+
+
+#Loginbutton, #Signupbutton{
+  margin-top: 20px;
+  color:#333;
+}
+
+#signupsubmitbutton{
+  margin-top: 20px
+}
+
+.form-entry{
+  width: 150px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+#signup{
+  color:black;
+  border-color: peachpuff;
+}
+
+.nav-button{
+margin-top: 20px;
+}
+
+.index-header{
+  margin-top:50px;
+}
+
+.preferences{
+  font-size:25px;
+}
+
+.left-col{
+  height:240px;
+  background: moccasin;
+}
+
+.right-col{
+  height:240px;
+  background: peachpuff;
+}
+
+.preferences-header{
+  margin-top: 25px;
+
+}
+
+#preference{
+  list-style-type: none;
+}
+
+#preference li label{
+  padding:10px;
+  font-size: 30px
+  background:moccasin;
+  }

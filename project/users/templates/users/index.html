@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- <div class="row">
+  <div class="col-md-4">.col-md-4</div>
+  <div class="col-md-4 col-md-offset-4">.col-md-4 .col-md-offset-4</div>
+</div> -->
+
+<div class="row">
+  <div class="index-header col-md-4 col-md-offset-4 text-center">
+    <h3>Hello @{{current_user.username}}</h3>
+
+    <p>Podcasts are fun. Lorem ipsum bla bla erasmus.</p>
+
+    <p>Here are some of the most popular podcasts today:</p>
+    <br>
+    <hr>
+    <h5>Don't like these? No worries.</h5>
+    <h5>Set your preferences <a href="{{url_for('users.new_preferences', id=current_user.id)}}">here</a></h5>
+    <h5>And we'll send you 5 podcasts a week that suit your taste</h5>
+  </div>
+  <div class="right-nav col-md-2 col-md-offset-2">
+    <a class="nav-button btn btn-default"href="{{url_for('users.edit', id=current_user.id)}}">Edit profile</a>
+    <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
+  </div>
+</div>
+<br>
+<hr>
+<div class="left-col col-md-4 text-center">
+    #1
+</div>
+<div class="mid-col col-md-4 text-center"> 
+    #2
+</div>
+<div class="right-col col-md-4 text-center"> 
+    #3
+</div>
+{% endblock %}

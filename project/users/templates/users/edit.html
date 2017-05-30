@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center">
+  <h3>Let's edit your username</h3>
+  <hr>
+
+  <form action="{{url_for('users.show',id=current_user.id)}}?_method=PATCH" method="POST">
+    {{form.csrf_token}}
+    {% for field in form %}
+      {% if field.name != 'csrf_token' %}
+      <p>
+          {{ field.label }}
+          {{ field }}
+        <span>
+            {% if field.errors %}
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            {% endif %}
+        </span>
+      </p>
+      {% endif %}
+    {% endfor %}
+    
+    <input type="submit" class="btn btn-success" value="Edit user">
+  </form>
+  <form action="{{url_for('users.show',id=current_user.id)}}?_method=DELETE" method="POST">
+  {{form.csrf_token}}
+  <input type="submit" class="btn btn-danger" value="Delete user">
+  </form>
+
+</div>
+{% endblock %}

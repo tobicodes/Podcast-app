@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="home container">
+  <div class="home-text col-md-4 text-center">
+    <h2>Your world. Your podcasts.</h2>
+      <p>The best audio stories in news, sports, business, politics, entertaintment and more. </p> 
+      <h4>Personalized for you.</h4>
+
+  </div>
+  <div class="col-md-2 col-md-offset-6">
+    <a href="{{url_for('users.signup')}}" class="btn btn-default" id="Signupbutton">Sign up</a>
+    <a href="{{url_for('users.login')}}" class="btn btn-default" id="Loginbutton">Log in</a>
+  </div>
+</div>
+{% endblock %}
