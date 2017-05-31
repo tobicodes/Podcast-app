@@ -25,14 +25,14 @@ def ensure_correct_user(fn):
         return fn(*args, **kwargs)
     return wrapper
 
-@preferences_blueprint.route('/', methods=["GET", 'PATCH', 'DELETE'])
-@login_required
-@ensure_correct_user
-def show(id):
-  if request.method ==b'PATCH':
-    pass
-  if request.method ==b'DELETE':
-    pass
-  return render_template('preferences/show.html')
+# @preferences_blueprint.route('/', methods=["GET", 'PATCH', 'DELETE'])
+# @login_required
+# @ensure_correct_user
+# def show(id):
+#   if request.method ==b'PATCH':
+#     pass
+#   if request.method ==b'DELETE':
+#     pass
+#   return render_template('preferences/show.html')
 
 

@@ -127,7 +127,7 @@ def preferences(id):
       current_user.preferences.append(Preference.query.get(preference))
     db.session.add(current_user)
     db.session.commit()
-    return redirect(url_for('preferences.show', id=current_user.id))
+    return redirect(url_for('users.show_preferences', id=current_user.id))
   return render_template('users/index.html', form=form)
 
 @users_blueprint.route('/<int:id>/preference/new', methods=['GET'])
@@ -137,6 +137,29 @@ def new_preferences(id):
   form = NewPreferenceForm()
   form.set_choices()
   return render_template('preferences/new.html', form=form)
+
+####################### EDIT and DELETE PREFERENCES ##############
+@users_blueprint.route('/<int:id>/preferences/edit', methods=['GET'])
+@login_required
+@ensure_correct_user
+def edit_preferences(id):
+  form = NewPreferenceForm(request.form)
+  form.set_choices()
+  return render_template('users/edit_preferences.html', form = form, id=current_user.id)
+
+
+@users_blueprint.route('/<int:id>/preferences/show', methods=['GET','PATCH', 'DELETE'])
+@login_required
+@ensure_correct_user
+def show_preferences(id):
+  form = NewPreferenceForm(request.form)
+  form.set_choices()
+  if request.method ==b'PATCH':
+    current_user.preferences = form.preferences.data
+    db.session.add(current_user)
+    db.session.commit()
+    return redirect(url_for('users.show_preferences',id=current_user.id))
+  return render_template('preferences/show.html', id=current_user.id)
 
 
 

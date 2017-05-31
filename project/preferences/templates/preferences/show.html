@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="text-center">
-  <h3>Hello @{{current_user.username}}</h3>
+<div class="view-preferences text-center">
+  <h3 class="preferences-header">Hello @{{current_user.username}}</h3>
 
   <p>Here are your current preferences:</p>
   {% for preference in current_user.preferences %}
   <p>{{preference}}</p>
   {% endfor %}
+  <h5>Edit preferences <a href="{{url_for('users.edit_preferences',id=current_user.id)}}">here</a></h5>
 </div>
 
 

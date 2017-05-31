@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="text-center" id="signup">
-    <h3 class="join_message">Sign up today</h3>
+    <h3 class="signupMessage">Sign up today</h3>
     <form action="{{url_for('users.signup')}}" method="POST">
       {{form.csrf_token}}
       {% if form.username.errors %}

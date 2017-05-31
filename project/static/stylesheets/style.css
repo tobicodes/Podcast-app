@@ -14,10 +14,29 @@ body{
   margin-top: 220px;
 }
 
+#loginForm{
+  margin-top: 100px;
+  font-size: 20px;
+}
+
+.loginFormText{
+  margin-bottom: 20px;
+}
 
 #Loginbutton, #Signupbutton{
   margin-top: 20px;
-  color:#333;
+}
+
+#Signupbutton{
+  background: orange;
+  color: white;
+  border-color: orange;
+}
+
+#Loginbutton{
+  color:black;
+  background: white;
+  border-color: white;
 }
 
 #signupsubmitbutton{
@@ -32,7 +51,13 @@ body{
 
 #signup{
   color:black;
-  border-color: peachpuff;
+  margin-top: 150px;
+  font-size: 15px
+  
+}
+
+.signupMessage{
+  margin-bottom: 20px
 }
 
 .nav-button{
@@ -41,10 +66,17 @@ margin-top: 20px;
 
 .index-header{
   margin-top:50px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .preferences{
   font-size:25px;
+}
+`
+/* Index page */ 
+.index-page{
+  background: #293E4D;
+  color:white;
 }
 
 .left-col{
@@ -71,3 +103,19 @@ margin-top: 20px;
   font-size: 30px
   background:moccasin;
   }
+
+.view-preferences{
+  margin-top: 200px
+}
+
+.linkToPrefs{
+  color:firebrick;
+}
+
+.preferences_new{
+  background: #293E4D;
+  font-family: 'Montserrat', sans-serif;
+  color:white;
+
+
+}

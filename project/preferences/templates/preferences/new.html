@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="text-center">
+<div class="preferences_new container-fluid text-center">
 
-<h5 class="preferences-header">Choose as many categories as interest you</h5>
+<h5 class="preferences-header">Choose as many categories as you find interesting</h5>
   <hr>
 
   <form method="POST" action="{{url_for('users.preferences',id=current_user.id)}}">

@@ -2,10 +2,10 @@
 
 {% block content %}
 
-<div class="text-center" id="login">
-    <h3 class="join_message">Login</h3>
+<div class="text-center" id="loginForm">
+    <h3 class="loginFormText">Login</h3>
     <form action="{{url_for('users.login')}}" method="POST">
-      {{form.csrf_token}}
+    {{form.csrf_token}}
       {% if form.username.errors %}
         {% for error in form.username.errors %}
         <span class="text-danger">
