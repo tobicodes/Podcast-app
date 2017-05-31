@@ -1,4 +1,5 @@
-from flask import redirect, render_template, request, url_for, Blueprint, flash
+import requests
+from flask import redirect, render_template, request, url_for, Blueprint, flash, jsonify
 from project.users.models import User, Preference, UserPreference
 from project.users.forms import SignupForm, LoginForm, EditUserForm, NewPreferenceForm
 from project import db, bcrypt
@@ -160,6 +161,89 @@ def show_preferences(id):
     db.session.commit()
     return redirect(url_for('users.show_preferences',id=current_user.id))
   return render_template('preferences/show.html', id=current_user.id)
+
+
+################# ROUTE FOR HANDLING REQUESTS TO ITUNES API ################
+pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Performing Arts':1405, 'Visual Arts': 1406, 'Fashion & Beauty':1459, 'Comedy':1303, 'Education':1304, 'K-12':1415, 
+            'Higher Education':1416, 'Educational Technology': 1468, 'Language Courses': 1469,'Training':1470, 'Kids & Family': 1305, 'Health':1307, 'Fitness & Nutritition': 1417, 'Self-Help':1420,
+            'Sexuality':1421, 'Alternative Health': 1481, 'TV % Film': 1309, 'Music': 1310, 'News & Politics': 1311, 'Religion & Spirituality': 1314, 'Buddhism': 1438, 'Christianity':1439, 'Islam': 1440,
+            'Judaism': 1441, 'Spirituality': 1444, 'Hinduism': 1463, 'Other': 1464, 'Science & Medicine': 1315, 'Natural Sciences': 1477, 'Medicine': 1478, 'Social Sciences': 1479, 'Sports & Recreation': 1316,
+            'Outdoor': 1456, 'Professional': 1465, 'College & High School': 1466, 'Amateur':1467, 'Technology':1318, 'Gadgets':1446, 'Tech News':1448, 'Podcasting': 1450, 'Software How-To':1480, 'Business':1321,
+            'Careers':1410, 'Investing': 1412, 'Management & Marketing':1413, 'Business News':1471, 'Shopping':1472, 'Games & Hobbies':1323, 'Video Games': 1404, 'Automotive':1454, 'Aviation':1455, 'Hobbies':1460,
+            'Other Games':1461, 'Society & Culture':1324, 'Personal Journals':1302, "Places & Travels":1320, 'Philopsphy':1443, "History":1462, 'Government & Organizations':1325, 'National':1473, 'Regional': 1474,
+            "Local": 1475, "Non-Profit": 1476}
+
+## id's should be strings so convert to string when making query string
+## other refers to other religions 
+
+
+@users_blueprint.route('/<int:id>/requests/', methods=['GET'])
+@login_required
+@ensure_correct_user
+def request_data(id):
+  map_ids = [pref_map[p.content] for p in current_user.preferences]
+
+  playlist = []
+  for map_id in map_ids:
+    result = requests.get("https://itunes.apple.com/us/rss/toppodcasts/genre={}/json".format(map_id))
+    for entry in result.json()['feed']['entry']:
+    
+      playlist.append(entry)
+
+
+
+  ## Now we have N * 10 entries in playlist where N is number of preferences
+
+  titles = [item['im:name']['label']for item in playlist]
+  
+  current_user.playlist_titles = titles
+
+  db.session.add(current_user)
+  db.session.commit()
+  
+  return jsonify(playlist, current_user.playlist_titles)
+
+  
+
+  
+  
+  
+   
+  # result = requests.get("https://itunes.apple.com/us/rss/toppodcasts/genre={}/json".format(pref_id))
+
+  # Get Podcast name ===> result.json()['feed']['entry'][0]
+
+  
+
+
+
+## makes a query string and makes request to get all data for podcasts. 26 is the ID for podcasts on Itunes api endpoint
+
+# res = requests.get('https://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/genres', params={'id': 26})
+
+  # res = requests.get('https://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/genres')
+  # all_pod_data = res.json()['26']
+
+  # top_pod_url = all_pod_data['rssUrls']['topPodcasts']
+  #  ## returns a URL that links to JSON object with data about current top podcasts 
+  # all_data = res.json()
+  # print(all_data)
+
+  # subgenres = all_pod_data['subgenres'] ##16 elements in this object. Some of these have nested subgenres
+
+  ## url for top_audio_podcasts 'https://itunes.apple.com/us/rss/topaudiopodcasts/genre=1301/json'
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -16,6 +16,8 @@ class User(db.Model, UserMixin):
   email = db.Column(db.Text, unique=True)
   password=db.Column(db.Text)
   preferences = db.relationship("Preference", secondary=UserPreference, backref=db.backref('user'))
+  playlist = db.Column(db.Text)
+  playlist_titles =db.Column(db.Text)
 
   def __init__(self,username,email,password):
     self.username = username
