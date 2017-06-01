@@ -1,12 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="recommendations text-center">
-<h5>Recommended for you @{{current_user.username}}</h5>
+<!-- <div class="row text-center">
+  <h4>Recommended just for you @{{current_user.username}}</h4>
+  {% for podcast in podcasts_to_render %}
+    <img src="{{podcast.Picture_URL}}">
+    <p><a href="{{podcast.Podcast_URL}}">{{podcast.Title}}</a></p>
+    <p>{{podcast.Summary}}</p>
+</div> -->
+<!-- {% endfor %} -->
+<div class="recommendations text-center container-fluid">
+<h3 class="recommendations-text">Recommended for you @{{current_user.username}}</h3>
 {% for podcast in podcasts_to_render %}
-  <p><a href="{{podcast.Podcast_URL}}">{{podcast.Title}}</a></p>
-  <img src="{{podcast.Picture_URL}}">
-  <p>{{podcast.Summary}}</p>
+  <div class="row">
+    <img src="{{podcast.Picture_URL}}">
+    <p><a href="{{podcast.Podcast_URL}}">{{podcast.Title}}</a></p>
+    <p>Category: {{podcast.Category}}</p>
+    <p>{{podcast.Summary}}</p>
+  </div>
 {% endfor %}
 </div>
 
 {% endblock %}
+

@@ -67,6 +67,7 @@ margin-top: 20px;
 .index-header{
   margin-top:50px;
   font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
 }
 
 .preferences{
@@ -100,8 +101,9 @@ margin-top: 20px;
 
 #preference li label{
   padding:10px;
-  font-size: 30px
-  background:moccasin;
+  font-size: 15px;
+  font-weight: 200;
+  
   }
 
 .view-preferences{
@@ -109,13 +111,60 @@ margin-top: 20px;
 }
 
 .linkToPrefs{
-  color:firebrick;
+  background: #333;
+  color: white;
 }
 
 .preferences_new{
   background: #293E4D;
   font-family: 'Montserrat', sans-serif;
   color:white;
-
+  font-weight: 200;
 
 }
+
+.recommendations{
+  font-family: 'Montserrat', sans-serif;
+  background:white ;
+  color:#293E4D;
+
+}
+
+.recommendations a{
+  color:#337ab7;
+  font-weight: 700;
+}
+
+.nav-button, #Signupbutton, #Loginbutton{
+  font-family: 'Montserrat', sans-serif;
+}
+
+.nav-button-edit-profile{
+  background: #333;
+  color: white;
+  margin-top: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+.recommendations-text{
+  margin-top: 20px;
+}
+
+#editUserButton{
+  background: #333;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+
+}
+
+.edit-page{
+  font-family: 'Montserrat', sans-serif;
+  border: 3px solid #333;
+  margin-top: 12%;
+}
+
+#deleteUserButton{
+  font-family: 'Montserrat', sans-serif;
+  background: crimson;
+  color:white;
+}
+

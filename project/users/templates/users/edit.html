@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<div class="text-center">
-  <h3>Let's edit your username</h3>
+<div class="edit-page text-center">
+  <h3>Let's edit your password</h3>
   <hr>
 
   <form action="{{url_for('users.show',id=current_user.id)}}?_method=PATCH" method="POST">
@@ -24,11 +24,11 @@
       {% endif %}
     {% endfor %}
     
-    <input type="submit" class="btn btn-success" value="Edit user">
+    <input type="submit" id="editUserButton"class="btn btn-default" value="Edit user">
   </form>
   <form action="{{url_for('users.show',id=current_user.id)}}?_method=DELETE" method="POST">
   {{form.csrf_token}}
-  <input type="submit" class="btn btn-danger" value="Delete user">
+  <input type="submit" id="deleteUserButton"class="btn btn-default" value="Delete user">
   </form>
 
 </div>

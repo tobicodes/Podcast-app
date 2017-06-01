@@ -12,26 +12,15 @@
       <br>
       <hr>
       <h5>Don't like these? No worries.</h5>
-      <h5>Set your preferences <a class="linkToPrefs" href="{{url_for('users.new_preferences', id=current_user.id)}}">here</a></h5>
-      <h5>And we'll send you 5 podcasts a week that suit your taste</h5>
+      <a class="linkToPrefs btn btn-default" href="{{url_for('users.new_preferences', id=current_user.id)}}">Set your preferences</a>
+      <a class="linkToRecommendations btn btn-default" href="{{url_for('users.request_data', id=current_user.id)}}">View recommendations</a>
     </div>
     <div class="right-nav col-md-2 col-md-offset-2">
-      <a class="nav-button btn btn-default"href="{{url_for('users.edit', id=current_user.id)}}">Edit profile</a>
+      <a class="nav-button-edit-profile btn btn-default"href="{{url_for('users.edit', id=current_user.id)}}">Edit profile</a>
       <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
     </div>
   </div>
   <br>
   <hr>
-  <div class="row">
-    <div class="left-col col-md-4 text-center">
-        #1
-    </div>
-    <div class="mid-col col-md-4 text-center"> 
-        #2
-    </div>
-    <div class="right-col col-md-4 text-center"> 
-        #3
-    </div>
-  </div>
 </div>
 {% endblock %}

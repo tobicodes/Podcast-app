@@ -129,7 +129,7 @@ def preferences(id):
       current_user.preferences.append(Preference.query.get(preference))
     db.session.add(current_user)
     db.session.commit()
-    return redirect(url_for('users.show_preferences', id=current_user.id))
+    return redirect(url_for('users.request_data', id=current_user.id))
   return render_template('users/index.html', form=form)
 
 @users_blueprint.route('/<int:id>/preference/new', methods=['GET'])
@@ -178,7 +178,7 @@ pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Perform
 ## other refers to other religions 
 
 
-@users_blueprint.route('/<int:id>/requests/', methods=['GET'])
+@users_blueprint.route('/<int:id>/recommendations/', methods=['GET'])
 @login_required
 @ensure_correct_user
 def request_data(id):
@@ -193,12 +193,10 @@ def request_data(id):
 
   ## Now we have N * 10 entries in playlist where N is number of preferences
 
-  titles = [item['im:name']['label']for item in playlist]
-  summaries = [item['summary']['label']for item in playlist]
-  podcast_URL = [item['link']['attributes']['href']for item in playlist]
-  picture_URL = [item['im:image'][2]['label']for item in playlist]
-
-
+  # titles = [item['im:name']['label']for item in playlist]
+  # summaries = [item['summary']['label']for item in playlist]
+  # podcast_URL = [item['link']['attributes']['href']for item in playlist]
+  # picture_URL = [item['im:image'][2]['label']for item in playlist]
 
   podcast_data = []
   for item in playlist:
@@ -207,22 +205,15 @@ def request_data(id):
     obj['Summary'] = item['summary']['label']
     obj['Podcast_URL']=item['link']['attributes']['href']
     obj['Picture_URL']=item['im:image'][2]['label']
+    obj['Category']=item['category']['attributes']['label']
     podcast_data.append(obj)
-
-  podcasts_to_render = random.sample(podcast_data,8)
-
-
   
-# arr = []
-#     ...: for x in playlist:
-#     ...:    obj = {}
-#     ...:    obj['Title'] = x['im:name']['label']
-#     ...:    obj['Summary'] = x['summary']['label']
-#     ...:    obj['Podcast_URL']=x['link']['attributes']['href']
-#     ...:    obj['Picture_URL']=x['im:image'][2]['label']
-#     ...:    arr.append(obj)
+
+  podcasts_to_render = random.sample(podcast_data,10)
   
-  return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render)
+  more_podcasts = [x for x in podcast_data if x not in podcasts_to_render]
+
+  return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render, more_podcasts=more_podcasts)
 
   
 
