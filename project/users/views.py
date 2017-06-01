@@ -1,3 +1,4 @@
+import random
 import requests
 from flask import redirect, render_template, request, url_for, Blueprint, flash, jsonify
 from project.users.models import User, Preference, UserPreference
@@ -190,18 +191,38 @@ def request_data(id):
     
       playlist.append(entry)
 
-
-
   ## Now we have N * 10 entries in playlist where N is number of preferences
 
   titles = [item['im:name']['label']for item in playlist]
-  
-  current_user.playlist_titles = titles
+  summaries = [item['summary']['label']for item in playlist]
+  podcast_URL = [item['link']['attributes']['href']for item in playlist]
+  picture_URL = [item['im:image'][2]['label']for item in playlist]
 
-  db.session.add(current_user)
-  db.session.commit()
+
+
+  podcast_data = []
+  for item in playlist:
+    obj = {}
+    obj['Title'] = item['im:name']['label']
+    obj['Summary'] = item['summary']['label']
+    obj['Podcast_URL']=item['link']['attributes']['href']
+    obj['Picture_URL']=item['im:image'][2]['label']
+    podcast_data.append(obj)
+
+  podcasts_to_render = random.sample(podcast_data,8)
+
+
   
-  return jsonify(playlist, current_user.playlist_titles)
+# arr = []
+#     ...: for x in playlist:
+#     ...:    obj = {}
+#     ...:    obj['Title'] = x['im:name']['label']
+#     ...:    obj['Summary'] = x['summary']['label']
+#     ...:    obj['Podcast_URL']=x['link']['attributes']['href']
+#     ...:    obj['Picture_URL']=x['im:image'][2]['label']
+#     ...:    arr.append(obj)
+  
+  return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render)
 
   
 
