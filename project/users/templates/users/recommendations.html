@@ -32,7 +32,7 @@
         <p><a href="{{podcast.podcast_URL}}">{{podcast.title}}</a></p>
         <p>Category: {{podcast.category}}</p>
         <p>{{podcast.display_summary}}</p>
-        <form method="POST" action="{{url_for('users.like_pod', podcast_id=podcast.id)}}"> 
+        <form data-id = {{podcast.id}} class ="save-form" method="POST" action="{{url_for('users.like_pod', podcast_id=podcast.id)}}"> 
           <input type="submit" class="save-button btn btn-default" value="Save">
         </form>
       </div>

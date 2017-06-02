@@ -19,16 +19,10 @@
     <div class="index-header col-md-4">
       <h3>Hello @{{current_user.username}}</h3>
 
-      <p>Podcasts are fun and free. Like a Long Island Ice Tea but free. Yada yada yada</p>
+      <p>Podcasts are fun. Like a Long Island Ice Tea but free. Yada yada yada.</p>
 
       <p>Here are some of the most popular podcasts today:</p>
       <br>
-    </div>
-    <div class="index-box col-md-5 col-md-offset-2 thumbnail text-center">
-      <h5>Don't like these podcasts? No worries.</h5>
-      <a class="linkToPrefs btn btn-default" href="{{url_for('users.new_preferences', id=current_user.id)}}">Set your preferences</a>
-      <a class="linkToRecommendations btn btn-default" href="{{url_for('users.request_data', id=current_user.id)}}">View recommendations</a>
-      <a class="linkToEditPrefs btn btn-default" href="{{url_for('users.edit_preferences', id=current_user.id)}}">Edit preferences</a>
     </div>
   </div>
   <div class="row">
@@ -44,6 +38,12 @@
     </div>
   {% endfor %}
   </div>
+  <div class="index-box text-center">
+      <h5>Don't like these podcasts? No worries.</h5>
+      <a class="linkToPrefs btn btn-default" href="{{url_for('users.new_preferences', id=current_user.id)}}">Set your preferences</a>
+      <a class="linkToRecommendations btn btn-default" href="{{url_for('users.request_data', id=current_user.id)}}">View recommendations</a>
+      <a class="linkToEditPrefs btn btn-default" href="{{url_for('users.edit_preferences', id=current_user.id)}}">Edit preferences</a>
+    </div>
   
 </div>
 {% endblock %}

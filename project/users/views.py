@@ -370,7 +370,8 @@ def like_pod(podcast_id):
   current_user.liked_podcasts.append(podcast)
   db.session.add(current_user)
   db.session.commit()
-  return redirect(url_for('users.request_data',id=current_user.id))
+  return "done"
+  # redirect(url_for('users.request_data',id=current_user.id))
 
 @users_blueprint.route('/liked-podcasts', methods=['GET'])
 @login_required

@@ -1,10 +1,15 @@
-console.log("yo")
 
 $(function() {
+  $('.save-form').on('submit', function(e){
+    var id = $(this).data('id')
+    e.preventDefault();
     $.ajax({
-      url: "/users/40/requests"
+      method: 'POST',
+      url: "/users/liked/"+id
     }).then(function(obj){
-      console.log(obj)
+      $(e.target).find('input').attr('disabled','disabled')
     })
+  })
+    
 });
 
