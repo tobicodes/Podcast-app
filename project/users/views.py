@@ -66,7 +66,7 @@ def login():
         if is_authenticated:
           login_user(found_user)
           flash({'text': "Hello, {}!".format(found_user.username), 'status': 'success'})
-          return redirect(url_for('users.show'))
+          return redirect(url_for('users.show',id=current_user.id))
         else:
           flash({ 'text': "Wrong password, please try again.", 'status': 'danger'})
       else:
