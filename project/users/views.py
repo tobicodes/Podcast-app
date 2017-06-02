@@ -27,6 +27,7 @@ def ensure_correct_user(fn):
 
 @users_blueprint.route('/', methods=['GET'])  
 def index():
+  
   result = requests.get('https://itunes.apple.com/us/rss/toppodcasts/genre=26/json')
   pod_results = result.json()['feed']['entry']
   pod_objects = []
@@ -46,8 +47,6 @@ def index():
     pod['itunes_id'] = int(podcast['id']['attributes']['im:id'])
     podcast_list.append(pod)
   
-  podcasts_to_render=random.sample(podcast_list,number_of_pods_to_display)
-  
   truncate_length = 45
 
   for podcast in podcast_list:
@@ -55,13 +54,32 @@ def index():
     podcast['shortened_arr'] = []
     podcast['truncated_summary'] = ""
     if len(podcast['split_up']) < truncate_length:
-      podcast['truncated_summary'] = podcast['Summary'] + "..."
-
+      podcast['truncated_summary'] = podcast['Summary']
     else: 
       for x in range(0,truncate_length):
         podcast['shortened_arr'].append(podcast['split_up'][x])
         podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
-  
+
+  for pod in podcast_list:
+    podcast_already_in_table = Podcast.query.filter_by(itunes_id = pod['itunes_id']).first()
+    if podcast_already_in_table == None:
+      new_pod = Podcast(
+      title=pod['Title'],
+      podcast_url=pod['Podcast_URL'],
+      picture_url=pod['Picture_URL'],
+      summary=pod['Summary'],
+      category=pod['Category'],
+      truncated_summary=pod['truncated_summary'],
+      itunes_id=pod['itunes_id'],
+      display_summary=pod['display_summary'])
+      current_user.podcasts.append(new_pod)
+    else:
+      current_user.podcasts.append(podcast_already_in_table)
+  db.session.add(current_user)
+  db.session.commit()
+
+  podcasts_to_render=random.sample(current_user.podcasts.all(),number_of_pods_to_display)
+  from IPython import embed; embed()
   return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
 
 ########################### SIGN UP ############################
@@ -122,10 +140,11 @@ def logout():
 def edit(id):
   return render_template('users/edit.html', form=EditUserForm(), user=User.query.get(id))
 
-@users_blueprint.route('/<int:id>/show', methods=['GET','PATCH', 'DELETE'])
+@users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
 @login_required
 @ensure_correct_user
 def show(id):
+
 
   if request.method == b'PATCH':
     form =EditUserForm()
@@ -171,7 +190,6 @@ def show_username(id):
     else:
       flash("Oops something went wrong. Please try again with at least 6 characters")
       return render_template('users/edit-username.html', form=form)
-
 
 
 ################## FUNCTIONALITY FOR USERS TO ADD PREFERENCES ###############
@@ -273,7 +291,6 @@ def request_data(id):
     pod['itunes_id'] = int(item['id']['attributes']['im:id'])
     podcast_data.append(pod)
 
-## don't forget to add truncated summary to Podcast instance
 
 ############ TRUNCATING SUMMARY TEXT ############################
   truncate_length = 45
@@ -289,7 +306,7 @@ def request_data(id):
         podcast['shortened_arr'].append(podcast['split_up'][x])
         podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
 
-  ############### Truncating to display based on characters ##########
+  ############### Truncating to display based on length of characters ##########
   max_char_length = 200
   for podcast in podcast_data:
     podcast['summary_split_chars']=list(podcast['Summary'])

@@ -35,9 +35,9 @@
   {% for podcast in podcasts_to_render %}
     <div class="col-sm-6 col-md-4 col-lg-4">
       <div class="podcast-entries thumbnail text-center">
-        <img src="{{podcast.Picture_URL}}">
-        <p><a href="{{podcast.Podcast_URL}}">{{podcast.Title}}</a></p>
-        <p>Category: {{podcast.Category}}</p>
+        <img src="{{podcast.picture_url}}">
+        <p><a href="{{podcast.podcast_url}}">{{podcast.title}}</a></p>
+        <p>Category: {{podcast.category}}</p>
         <p>{{podcast.truncated_summary}}</p>
         <p><a href="#" class="btn btn-default">Upvote</a></p>
       </div>

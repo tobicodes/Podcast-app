@@ -198,11 +198,13 @@ margin-top: 20px;
 
 .podcast-entries{
   font-family: 'Montserrat', sans-serif;
+  height:550px;
 
 }
 
 .index-box{
   margin-top: 100px;
+  margin-right: 40px;
 }
 
 .button-to-saved-pods{
@@ -218,6 +220,7 @@ margin-top: 20px;
 
 .saved-pods-display{
   background: #333;
+  height:270px;
 }
 
 .saved-pod-link{
