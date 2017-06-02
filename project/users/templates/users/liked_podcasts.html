@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="saved-pods container-fluid">
+
+  <div class="row col-md-2 col-md-offset-10">
+
+      <a class="nav-button-dark btn btn-default" href="{{url_for('users.index')}}">My profile</a>
+      <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
+  </div>
+  <h3 class="text-center">Hey @{{current_user.username}}. Here are your saved pods:</h3>
+  {% for podcast in all_liked_podcasts %}
+  <div class="saved-pods-display thumbnail text-center col-md-4">
+      <p><a class="saved-pod-link"href="{{podcast.podcast_url}}">{{podcast.title}}</a></p>
+      <img src="{{podcast.picture_url}}">
+      <p>Category: {{podcast.category}}</p>
+  </div>
+    {% endfor %}
+</div>
+{% endblock %}

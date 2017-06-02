@@ -20,6 +20,10 @@ class EditUserForm(FlaskForm):
     new_password = PasswordField('new password', validators =[DataRequired(), EqualTo('confirm_new_password', message='Passwords must match')])
     confirm_new_password = PasswordField('confirm password')
 
+class EditUserName(FlaskForm):
+  current_username = StringField('current username', validators=[DataRequired()])
+  new_username = StringField('new username', validators=[DataRequired(), Length(min=4)])
+
 
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label=False)
@@ -30,7 +34,7 @@ class NewPreferenceForm(FlaskForm):
   preference = MultiCheckboxField('Preference',coerce=int)
 
   def __repr__(self):
-    return "Hey"
+    return "This is a multicheckbox field"
 ## Add validators - at least one box must be selected, if not flash a message
 
   def set_choices(self):

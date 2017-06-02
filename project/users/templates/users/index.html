@@ -1,26 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="index-page">
+<div class="index-page container-fluid">
+  <div class="right-nav row">
+    <div class="col-md-3 col-md-offset-9">
+      <button class="edit-profile-dropdown btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Edit Profile
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a class="nav-button-edit-username btn" href="{{url_for('users.edit_username', id=current_user.id)}}">Edit username</a></li>
+        <li><a class="change-password-button btn" href="{{url_for('users.edit', id=current_user.id)}}">Change password</a></li>
+      </ul>
+    
+    <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
+    </div>
+  </div>
+  
   <div class="row">
-    <div class="index-header col-md-4 col-md-offset-4 text-center">
+    <div class="index-header col-md-4">
       <h3>Hello @{{current_user.username}}</h3>
 
-      <p>Podcasts are fun. Lorem ipsum bla bla erasmus.</p>
+      <p>Podcasts are fun and free. Reclaim your commute by listening to a podcast today.</p>
 
       <p>Here are some of the most popular podcasts today:</p>
       <br>
-      <hr>
-      <h5>Don't like these? No worries.</h5>
+    </div>
+    <div class="index-box col-md-5 col-md-offset-2 thumbnail text-center">
+      <h5>Don't like these podcasts? No worries.</h5>
       <a class="linkToPrefs btn btn-default" href="{{url_for('users.new_preferences', id=current_user.id)}}">Set your preferences</a>
       <a class="linkToRecommendations btn btn-default" href="{{url_for('users.request_data', id=current_user.id)}}">View recommendations</a>
-    </div>
-    <div class="right-nav col-md-2 col-md-offset-2">
-      <a class="nav-button-edit-profile btn btn-default"href="{{url_for('users.edit', id=current_user.id)}}">Edit profile</a>
-      <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
+      <a class="linkToEditPrefs btn btn-default" href="{{url_for('users.edit_preferences', id=current_user.id)}}">Edit preferences</a>
     </div>
   </div>
-  <br>
-  <hr>
+  <div class="row">
+  {% for podcast in podcasts_to_render %}
+    <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="podcast-entries thumbnail text-center">
+        <img src="{{podcast.Picture_URL}}">
+        <p><a href="{{podcast.Podcast_URL}}">{{podcast.Title}}</a></p>
+        <p>Category: {{podcast.Category}}</p>
+        <p>{{podcast.truncated_summary}}</p>
+        <p><a href="#" class="btn btn-default">Upvote</a></p>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  
 </div>
 {% endblock %}

@@ -1,5 +1,12 @@
 body{
   color: black;
+  font-family: 'Montserrat', sans-serif;
+}
+
+html, body{ 
+  width:100%; 
+  height:100%; 
+  margin:0;  
 }
 
 .home{
@@ -60,7 +67,7 @@ body{
   margin-bottom: 20px
 }
 
-.nav-button{
+.nav-button,.edit-profile-dropdown{
 margin-top: 20px;
 }
 
@@ -78,6 +85,8 @@ margin-top: 20px;
 .index-page{
   background: #293E4D;
   color:white;
+  font-family: 'Montserrat', sans-serif;
+
 }
 
 .left-col{
@@ -110,9 +119,13 @@ margin-top: 20px;
   margin-top: 200px
 }
 
-.linkToPrefs{
+.linkToPrefs,.linkToEditPrefs,.button-back-to-index{
   background: #333;
   color: white;
+}
+
+.button-back-to-index{
+  margin-top:20px;
 }
 
 .preferences_new{
@@ -130,12 +143,12 @@ margin-top: 20px;
 
 }
 
-.recommendations a{
+.recommendations p a{
   color:#337ab7;
   font-weight: 700;
 }
 
-.nav-button, #Signupbutton, #Loginbutton{
+.nav-button, #Signupbutton, #Loginbutton {
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -145,6 +158,9 @@ margin-top: 20px;
   margin-top: 20px;
   font-family: 'Montserrat', sans-serif;
 }
+
+
+
 .recommendations-text{
   margin-top: 20px;
 }
@@ -154,6 +170,18 @@ margin-top: 20px;
   color: white;
   font-family: 'Montserrat', sans-serif;
 
+}
+.edit-profile-dropdown{
+  background: #333;
+  color: white;
+  border-color: #333;
+
+}
+
+.edit-profile-dropdown:hover{
+    color: #fff;
+    background-color: darkslategray;
+    border-color: #333;
 }
 
 .edit-page{
@@ -168,3 +196,37 @@ margin-top: 20px;
   color:white;
 }
 
+.podcast-entries{
+  font-family: 'Montserrat', sans-serif;
+
+}
+
+.index-box{
+  margin-top: 100px;
+}
+
+.button-to-saved-pods{
+  margin-top: 20px;
+}
+
+.saved-pods{
+  background: #333;
+  color: white;
+  margin-top: 20px;
+  height: 100%
+}
+
+.saved-pods-display{
+  background: #333;
+}
+
+.saved-pod-link{
+  color:moccasin;
+}
+
+.nav-button-dark{
+  background: #333;
+  color: white;
+  margin-top: 20px;
+
+}

@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<div class="preferences_new text-center">
-  <h3>@{{current_user.username}} </h3>
-  <h5>Edit your preferences</h5>
+<div class="text-center">
+  <h3> {{current_user.username}} </h3>
   <hr>
 
-  <form action="{{url_for('users.show_preferences',id=current_user.id)}}?_method=PATCH" method="POST">
+  <form action="{{url_for('users.show_username',id=current_user.id)}}?_method=PATCH" method="POST">
     {{form.csrf_token}}
     {% for field in form %}
       {% if field.name != 'csrf_token' %}
@@ -30,3 +28,5 @@
 </div>
 
 {% endblock %}
+
+

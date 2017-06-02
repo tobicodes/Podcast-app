@@ -1,14 +1,13 @@
 import random
 import requests
 from flask import redirect, render_template, request, url_for, Blueprint, flash, jsonify
-from project.users.models import User, Preference, UserPreference
-from project.users.forms import SignupForm, LoginForm, EditUserForm, NewPreferenceForm
+from project.users.models import User, Preference, UserPreference, Podcast
+from project.users.forms import SignupForm, LoginForm, EditUserForm, NewPreferenceForm, EditUserName
 from project import db, bcrypt
 from functools import wraps
 from flask_login import login_user, logout_user, current_user, login_required
 from functools import wraps
 from sqlalchemy.exc import IntegrityError
-
 
 
 users_blueprint = Blueprint(
@@ -28,8 +27,42 @@ def ensure_correct_user(fn):
 
 @users_blueprint.route('/', methods=['GET'])  
 def index():
-  user = current_user
-  return render_template('users/index.html', user=user)
+  result = requests.get('https://itunes.apple.com/us/rss/toppodcasts/genre=26/json')
+  pod_results = result.json()['feed']['entry']
+  pod_objects = []
+  number_of_pods_to_display = 3
+  
+  for result in pod_results:
+    pod_objects.append(result)
+
+  podcast_list=[]
+  for podcast in pod_objects:
+    pod = {}
+    pod['Title'] = podcast['im:name']['label']
+    pod['Summary'] = podcast['summary']['label']
+    pod['Podcast_URL']=podcast['link']['attributes']['href']
+    pod['Picture_URL']=podcast['im:image'][2]['label']
+    pod['Category']=podcast['category']['attributes']['label']
+    pod['itunes_id'] = int(podcast['id']['attributes']['im:id'])
+    podcast_list.append(pod)
+  
+  podcasts_to_render=random.sample(podcast_list,number_of_pods_to_display)
+  
+  truncate_length = 45
+
+  for podcast in podcast_list:
+    podcast['split_up'] = podcast['Summary'].split()
+    podcast['shortened_arr'] = []
+    podcast['truncated_summary'] = ""
+    if len(podcast['split_up']) < truncate_length:
+      podcast['truncated_summary'] = podcast['Summary'] + "..."
+
+    else: 
+      for x in range(0,truncate_length):
+        podcast['shortened_arr'].append(podcast['split_up'][x])
+        podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
+  
+  return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
 
 ########################### SIGN UP ############################
 
@@ -67,9 +100,9 @@ def login():
           flash({'text': "Hello, {}!".format(found_user.username), 'status': 'success'})
           return redirect(url_for('users.index'))
         else:
-          flash("Invalid password")
+          flash({ 'text': "Wrong password, please try again.", 'status': 'danger'})
       else:
-        flash({'text': "Invalid credentials.", 'status': 'danger'})
+        flash({'text': "Invalid username. Please try again", 'status': 'danger'})
       return render_template('users/login.html', form=form)
   return render_template('users/login.html', form=form)
 
@@ -80,21 +113,20 @@ def logout():
   return redirect(url_for('root'))
 
 
-######################### EDITING USER PASSWORD #####################
+######################### EDITING USERNAMES and USER PASSWORD #####################
+
+################## FOR PASSWORDS ################
 @users_blueprint.route('/<int:id>/edit')
 @login_required
 @ensure_correct_user
 def edit(id):
   return render_template('users/edit.html', form=EditUserForm(), user=User.query.get(id))
 
-
-
-####################### SHOW, PATCH, DELETE USERS ###################
 @users_blueprint.route('/<int:id>/show', methods=['GET','PATCH', 'DELETE'])
 @login_required
 @ensure_correct_user
 def show(id):
-############ EDITING PASSWORDS #####
+
   if request.method == b'PATCH':
     form =EditUserForm()
     if bcrypt.check_password_hash(current_user.password, request.form['current_password']):  ##check whether the hashed password is the same as the generated hash for the supplied password in form
@@ -114,8 +146,35 @@ def show(id):
     return redirect('home.html')
   return render_template('users/show.html', user=current_user)
 
+################# FOR USERNAMES ###############
 
-################## FORM FOR USERS TO ADD PREFERENCES
+@users_blueprint.route('/<int:id>/edit-username')
+@login_required
+@ensure_correct_user
+def edit_username(id):
+  form = EditUserName()
+  form.current_username = current_user.username
+  return render_template('users/edit-username.html', form=form)
+
+@users_blueprint.route('/<int:id>/show-username', methods=['GET', 'PATCH'])
+@login_required
+@ensure_correct_user
+def show_username(id):
+  if request.method == b'PATCH':
+    form = EditUserName(request.form)
+    if form.validate_on_submit():
+      current_user.username = request.form['new_username']
+      db.session.add(current_user)
+      db.session.commit()
+      flash("Successfully updated your username!")
+      return redirect(url_for('users.index'))
+    else:
+      flash("Oops something went wrong. Please try again with at least 6 characters")
+      return render_template('users/edit-username.html', form=form)
+
+
+
+################## FUNCTIONALITY FOR USERS TO ADD PREFERENCES ###############
 
 
 @users_blueprint.route('/<int:id>/preferences', methods=['GET','POST'])
@@ -145,7 +204,8 @@ def new_preferences(id):
 @login_required
 @ensure_correct_user
 def edit_preferences(id):
-  form = NewPreferenceForm(request.form)
+  user =User.query.get(id)
+  form = NewPreferenceForm(obj=user)
   form.set_choices()
   return render_template('users/edit_preferences.html', form = form, id=current_user.id)
 
@@ -154,15 +214,27 @@ def edit_preferences(id):
 @login_required
 @ensure_correct_user
 def show_preferences(id):
-  form = NewPreferenceForm(request.form)
+  form = NewPreferenceForm()
   form.set_choices()
   if request.method ==b'PATCH':
-    current_user.preferences = form.preferences.data
+
+    for preference in form.preference.data:
+      current_user.preferences.append(Preference.query.get(preference))
+
     db.session.add(current_user)
     db.session.commit()
-    return redirect(url_for('users.show_preferences',id=current_user.id))
+
+    # current_user.preferences = request.form['preferences']
+    # db.session.add(current_user)
+    # db.session.commit()
+    return redirect(url_for('users.request_data',id=current_user.id))
   return render_template('preferences/show.html', id=current_user.id)
 
+
+# if request.method=='POST':
+#     for preference in form.preference.data:
+#       current_user.preferences.append(Preference.query.get(preference))
+    
 
 ################# ROUTE FOR HANDLING REQUESTS TO ITUNES API ################
 pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Performing Arts':1405, 'Visual Arts': 1406, 'Fashion & Beauty':1459, 'Comedy':1303, 'Education':1304, 'K-12':1415, 
@@ -174,9 +246,7 @@ pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Perform
             'Other Games':1461, 'Society & Culture':1324, 'Personal Journals':1302, "Places & Travels":1320, 'Philopsphy':1443, "History":1462, 'Government & Organizations':1325, 'National':1473, 'Regional': 1474,
             "Local": 1475, "Non-Profit": 1476}
 
-## id's should be strings so convert to string when making query string
 ## other refers to other religions 
-
 
 @users_blueprint.route('/<int:id>/recommendations/', methods=['GET'])
 @login_required
@@ -188,36 +258,104 @@ def request_data(id):
   for map_id in map_ids:
     result = requests.get("https://itunes.apple.com/us/rss/toppodcasts/genre={}/json".format(map_id))
     for entry in result.json()['feed']['entry']:
-    
       playlist.append(entry)
 
   ## Now we have N * 10 entries in playlist where N is number of preferences
+
+  podcast_data = []
+  for item in playlist:
+    pod = {}
+    pod['Title'] = item['im:name']['label']
+    pod['Summary'] = item['summary']['label']
+    pod['Podcast_URL']=item['link']['attributes']['href']
+    pod['Picture_URL']=item['im:image'][2]['label']
+    pod['Category']=item['category']['attributes']['label']
+    pod['itunes_id'] = int(item['id']['attributes']['im:id'])
+    podcast_data.append(pod)
+
+## don't forget to add truncated summary to Podcast instance
+
+############ TRUNCATING SUMMARY TEXT ############################
+  truncate_length = 45
+
+  for podcast in podcast_data:
+    podcast['split_up'] = podcast['Summary'].split()
+    podcast['shortened_arr'] = []
+    podcast['truncated_summary'] = ""
+    if len(podcast['split_up']) < truncate_length:
+      podcast['truncated_summary'] = podcast['Summary']
+    else: 
+      for x in range(0,truncate_length):
+        podcast['shortened_arr'].append(podcast['split_up'][x])
+        podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
+
+  ############### Truncating to display based on characters ##########
+  max_char_length = 200
+  for podcast in podcast_data:
+    podcast['summary_split_chars']=list(podcast['Summary'])
+    podcast['chars_split'] = []
+    podcast['display_summary'] =""
+
+    if len(podcast['summary_split_chars']) < max_char_length:
+      podcast['display_summary']=podcast['Summary']
+    else:
+      for x in range(0, max_char_length-1):
+       podcast['chars_split'].append(podcast['summary_split_chars'][x])
+       podcast['display_summary'] = "".join(podcast['chars_split'])+ "..."
+  
+################# CREATING INSTANCES of PODCAST class to be placed as property on each current user ############# 
+  
+  for pod in podcast_data:
+    podcast_already_in_table = Podcast.query.filter_by(itunes_id = pod['itunes_id']).first()
+    if podcast_already_in_table == None:
+      new_pod = Podcast(
+      title=pod['Title'],
+      podcast_url=pod['Podcast_URL'],
+      picture_url=pod['Picture_URL'],
+      summary=pod['Summary'],
+      category=pod['Category'],
+      truncated_summary=pod['truncated_summary'],
+      itunes_id=pod['itunes_id'],
+      display_summary=pod['display_summary'])
+      current_user.podcasts.append(new_pod)
+    else:
+      current_user.podcasts.append(podcast_already_in_table)
+  db.session.add(current_user)
+  db.session.commit()
+
+  number_of_pods_to_render = 12
+  podcasts_to_render = random.sample(current_user.podcasts.all(),number_of_pods_to_render)
+  
+  more_podcasts = [podcast for podcast in podcast_data if x not in podcasts_to_render]
+  
+  return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render, more_podcasts=more_podcasts)
+
+############## ADDING FUNCTIONALITY FOR LIKING PODCASTS ########
+@users_blueprint.route('/liked/<int:podcast_id>', methods=['POST'])
+@login_required
+def like_pod(podcast_id):
+  podcast=Podcast.query.get(podcast_id)
+  current_user.liked_podcasts.append(podcast)
+  db.session.add(current_user)
+  db.session.commit()
+  return redirect(url_for('users.request_data',id=current_user.id))
+
+@users_blueprint.route('/liked-podcasts', methods=['GET'])
+@login_required
+def liked_podcasts():
+  all_liked_podcasts = current_user.liked_podcasts
+  return render_template('users/liked_podcasts.html',all_liked_podcasts=all_liked_podcasts)
+
+
+
+
+
+
 
   # titles = [item['im:name']['label']for item in playlist]
   # summaries = [item['summary']['label']for item in playlist]
   # podcast_URL = [item['link']['attributes']['href']for item in playlist]
   # picture_URL = [item['im:image'][2]['label']for item in playlist]
-
-  podcast_data = []
-  for item in playlist:
-    obj = {}
-    obj['Title'] = item['im:name']['label']
-    obj['Summary'] = item['summary']['label']
-    obj['Podcast_URL']=item['link']['attributes']['href']
-    obj['Picture_URL']=item['im:image'][2]['label']
-    obj['Category']=item['category']['attributes']['label']
-    podcast_data.append(obj)
-  
-
-  podcasts_to_render = random.sample(podcast_data,10)
-  
-  more_podcasts = [x for x in podcast_data if x not in podcasts_to_render]
-
-  return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render, more_podcasts=more_podcasts)
-
-  
-
-  
   
   
    
@@ -229,21 +367,8 @@ def request_data(id):
 
 
 
-## makes a query string and makes request to get all data for podcasts. 26 is the ID for podcasts on Itunes api endpoint
 
-# res = requests.get('https://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/genres', params={'id': 26})
-
-  # res = requests.get('https://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/genres')
-  # all_pod_data = res.json()['26']
-
-  # top_pod_url = all_pod_data['rssUrls']['topPodcasts']
-  #  ## returns a URL that links to JSON object with data about current top podcasts 
-  # all_data = res.json()
-  # print(all_data)
-
-  # subgenres = all_pod_data['subgenres'] ##16 elements in this object. Some of these have nested subgenres
-
-  ## url for top_audio_podcasts 'https://itunes.apple.com/us/rss/topaudiopodcasts/genre=1301/json'
+  
 
 
 
