@@ -27,9 +27,6 @@ def ensure_correct_user(fn):
 
 # @users_blueprint.route('/', methods=['GET'])  
 # def index():
-  
-  
-  
 #   return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
 
 ########################### SIGN UP ############################
@@ -356,7 +353,11 @@ def request_data(id):
   db.session.commit()
 
   number_of_pods_to_render = 12
-  podcasts_to_render = random.sample(current_user.podcasts.all(),number_of_pods_to_render)
+  if len(current_user.podcasts.all()) < number_of_pods_to_render:
+    podcasts_to_render= current_user.podcasts.all()
+  else:
+    podcasts_to_render = random.sample(current_user.podcasts.all(),number_of_pods_to_render)
+
   
   more_podcasts = [podcast for podcast in podcast_data if x not in podcasts_to_render]
   
@@ -384,7 +385,6 @@ def liked_podcasts():
 
 
 
-
   # titles = [item['im:name']['label']for item in playlist]
   # summaries = [item['summary']['label']for item in playlist]
   # podcast_URL = [item['link']['attributes']['href']for item in playlist]
@@ -392,28 +392,4 @@ def liked_podcasts():
   
   
    
-  # result = requests.get("https://itunes.apple.com/us/rss/toppodcasts/genre={}/json".format(pref_id))
-
-  # Get Podcast name ===> result.json()['feed']['entry'][0]
-
   
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
