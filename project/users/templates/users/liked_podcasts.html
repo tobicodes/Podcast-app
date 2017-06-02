@@ -5,7 +5,7 @@
 
   <div class="row col-md-2 col-md-offset-10">
 
-      <a class="nav-button-dark btn btn-default" href="{{url_for('users.index')}}">My profile</a>
+      <a class="nav-button-dark btn btn-default" href="{{url_for('users.show', id=current_user.id)}}">My profile</a>
       <a class="nav-button btn btn-default" href="{{url_for('users.logout')}}">Log out</a>
   </div>
   <h3 class="text-center">Hey @{{current_user.username}}. Here are your saved pods:</h3>

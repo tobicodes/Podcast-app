@@ -25,9 +25,94 @@ def ensure_correct_user(fn):
         return fn(*args, **kwargs)
     return wrapper
 
-@users_blueprint.route('/', methods=['GET'])  
-def index():
+# @users_blueprint.route('/', methods=['GET'])  
+# def index():
   
+  
+  
+#   return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
+
+########################### SIGN UP ############################
+
+@users_blueprint.route('/signup', methods=["GET", "POST"])
+def signup():
+  form = SignupForm()
+  if request.method == "POST":
+    if form.validate():
+      try:
+        new_user = User(
+          username=form.username.data,
+          email=form.email.data,
+          password=form.password.data
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user)
+      except IntegrityError as e:
+        flash({'text': "Username already taken", 'status': 'danger'})
+        return render_template('users/signup.html', form=form)
+      return redirect(url_for('users.show', id=new_user.id))
+  return render_template('users/signup.html', form=form)
+
+########################### LOG IN and LOG OUT ############################
+@users_blueprint.route('/login', methods=["GET", "POST"])
+def login():
+  form=LoginForm()
+  if request.method =='POST':
+    if form.validate():
+      found_user = User.query.filter_by(username = form.username.data).first()
+      if found_user:
+        is_authenticated = bcrypt.check_password_hash(found_user.password, form.password.data)
+        if is_authenticated:
+          login_user(found_user)
+          flash({'text': "Hello, {}!".format(found_user.username), 'status': 'success'})
+          return redirect(url_for('users.show'))
+        else:
+          flash({ 'text': "Wrong password, please try again.", 'status': 'danger'})
+      else:
+        flash({'text': "Invalid username. Please try again", 'status': 'danger'})
+      return render_template('users/login.html', form=form)
+  return render_template('users/login.html', form=form)
+
+@users_blueprint.route('/logout')
+def logout():
+  logout_user()
+  flash({ 'text': "You have successfully logged out.", 'status': 'success' })
+  return redirect(url_for('root'))
+
+
+######################### EDITING USERNAMES and USER PASSWORD #####################
+
+################## FOR PASSWORDS ################
+@users_blueprint.route('/<int:id>/edit')
+@login_required
+@ensure_correct_user
+def edit(id):
+  return render_template('users/edit.html', form=EditUserForm(), user=User.query.get(id))
+
+@users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
+@login_required
+@ensure_correct_user
+def show(id):
+  if request.method == b'PATCH':
+    form =EditUserForm()
+    if bcrypt.check_password_hash(current_user.password, request.form['current_password']):  ##check whether the hashed password is the same as the generated hash for the supplied password in form
+      if form.validate_on_submit():
+        current_user.setpassword(request.form['new_password'])
+        db.session.add(current_user)
+        db.session.commit()
+        return redirect(url_for('users.show', id=current_user.id))
+    else:
+      flash("That password is incorrect. Please try again")
+      return redirect(url_for('users.edit',form=form))
+####### DELETING USERS #####
+  if request.method == b'DELETE':
+    db.session.delete(current_user)
+    db.session.commit()
+    logout_user()
+    return redirect('home.html')
+
+######### GET Request to show route ###############
   result = requests.get('https://itunes.apple.com/us/rss/toppodcasts/genre=26/json')
   pod_results = result.json()['feed']['entry']
   pod_objects = []
@@ -60,6 +145,18 @@ def index():
         podcast['shortened_arr'].append(podcast['split_up'][x])
         podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
 
+  max_char_length = 200
+  for podcast in podcast_list:
+    podcast['summary_split_chars']=list(podcast['Summary'])
+    podcast['chars_split'] = []
+    podcast['display_summary'] =""
+    if len(podcast['summary_split_chars']) < max_char_length:
+      podcast['display_summary']=podcast['Summary']
+    else:
+      for x in range(0, max_char_length-1):
+       podcast['chars_split'].append(podcast['summary_split_chars'][x])
+       podcast['display_summary'] = "".join(podcast['chars_split'])+ "..."
+
   for pod in podcast_list:
     podcast_already_in_table = Podcast.query.filter_by(itunes_id = pod['itunes_id']).first()
     if podcast_already_in_table == None:
@@ -79,91 +176,9 @@ def index():
   db.session.commit()
 
   podcasts_to_render=random.sample(current_user.podcasts.all(),number_of_pods_to_display)
-  from IPython import embed; embed()
-  return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
 
-########################### SIGN UP ############################
-
-@users_blueprint.route('/signup', methods=["GET", "POST"])
-def signup():
-  form = SignupForm()
-  if request.method == "POST":
-    if form.validate():
-      try:
-        new_user = User(
-          username=form.username.data,
-          email=form.email.data,
-          password=form.password.data
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-      except IntegrityError as e:
-        flash({'text': "Username already taken", 'status': 'danger'})
-        return render_template('users/signup.html', form=form)
-      return redirect(url_for('users.preferences', id=new_user.id))
-  return render_template('users/signup.html', form=form)
-
-########################### LOG IN and LOG OUT ############################
-@users_blueprint.route('/login', methods=["GET", "POST"])
-def login():
-  form=LoginForm()
-  if request.method =='POST':
-    if form.validate():
-      found_user = User.query.filter_by(username = form.username.data).first()
-      if found_user:
-        is_authenticated = bcrypt.check_password_hash(found_user.password, form.password.data)
-        if is_authenticated:
-          login_user(found_user)
-          flash({'text': "Hello, {}!".format(found_user.username), 'status': 'success'})
-          return redirect(url_for('users.index'))
-        else:
-          flash({ 'text': "Wrong password, please try again.", 'status': 'danger'})
-      else:
-        flash({'text': "Invalid username. Please try again", 'status': 'danger'})
-      return render_template('users/login.html', form=form)
-  return render_template('users/login.html', form=form)
-
-@users_blueprint.route('/logout')
-def logout():
-  logout_user()
-  flash({ 'text': "You have successfully logged out.", 'status': 'success' })
-  return redirect(url_for('root'))
-
-
-######################### EDITING USERNAMES and USER PASSWORD #####################
-
-################## FOR PASSWORDS ################
-@users_blueprint.route('/<int:id>/edit')
-@login_required
-@ensure_correct_user
-def edit(id):
-  return render_template('users/edit.html', form=EditUserForm(), user=User.query.get(id))
-
-@users_blueprint.route('/<int:id>', methods=['GET','PATCH', 'DELETE'])
-@login_required
-@ensure_correct_user
-def show(id):
-
-
-  if request.method == b'PATCH':
-    form =EditUserForm()
-    if bcrypt.check_password_hash(current_user.password, request.form['current_password']):  ##check whether the hashed password is the same as the generated hash for the supplied password in form
-      if form.validate_on_submit():
-        current_user.setpassword(request.form['new_password'])
-        db.session.add(current_user)
-        db.session.commit()
-        return redirect(url_for('users.show', id=current_user.id))
-    else:
-      flash("That password is incorrect. Please try again")
-      return redirect(url_for('users.edit',form=form))
-####### DELETING USERS #####
-  if request.method == b'DELETE':
-    db.session.delete(current_user)
-    db.session.commit()
-    logout_user()
-    return redirect('home.html')
-  return render_template('users/show.html', user=current_user)
+  return render_template('users/show.html', user=current_user, podcasts_to_render=podcasts_to_render)
+  
 
 ################# FOR USERNAMES ###############
 
@@ -186,7 +201,7 @@ def show_username(id):
       db.session.add(current_user)
       db.session.commit()
       flash("Successfully updated your username!")
-      return redirect(url_for('users.index'))
+      return redirect(url_for('users.show'))
     else:
       flash("Oops something went wrong. Please try again with at least 6 characters")
       return render_template('users/edit-username.html', form=form)
@@ -207,7 +222,7 @@ def preferences(id):
     db.session.add(current_user)
     db.session.commit()
     return redirect(url_for('users.request_data', id=current_user.id))
-  return render_template('users/index.html', form=form)
+  return render_template('users/show.html', form=form)
 
 @users_blueprint.route('/<int:id>/preference/new', methods=['GET'])
 @login_required

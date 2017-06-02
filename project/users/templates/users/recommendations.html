@@ -4,7 +4,7 @@
 <div class="recommendations container-fluid">
   <div class="row">
     <div class="col-md-3">
-      <a class='button-back-to-index btn btn-default'href="{{url_for('users.index')}}">My profile page</a>
+      <a class='button-back-to-index btn btn-default'href="{{url_for('users.show', id=current_user.id)}}">My profile page</a>
       <a class='button-to-saved-pods btn btn-default'href="{{url_for('users.liked_podcasts')}}">View saved pods</a>
     </div>
 
@@ -33,7 +33,7 @@
         <p>Category: {{podcast.category}}</p>
         <p>{{podcast.display_summary}}</p>
         <form method="POST" action="{{url_for('users.like_pod', podcast_id=podcast.id)}}"> 
-          <input type="submit" class="btn btn-default" value="Save">
+          <input type="submit" class="save-button btn btn-default" value="Save">
         </form>
       </div>
     </div>
