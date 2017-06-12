@@ -25,7 +25,7 @@ def ensure_correct_user(fn):
         return fn(*args, **kwargs)
     return wrapper
 
-# @users_blueprint.route('/', methods=['GET'])
+# @users_blueprint.route('/', methods=['GET'])  
 # def index():
 #   return render_template('users/index.html', user=current_user, podcasts_to_render=podcasts_to_render)
 
@@ -114,7 +114,7 @@ def show(id):
   pod_results = result.json()['feed']['entry']
   pod_objects = []
   number_of_pods_to_display = 3
-
+  
   for result in pod_results:
     pod_objects.append(result)
 
@@ -128,7 +128,7 @@ def show(id):
     pod['Category']=podcast['category']['attributes']['label']
     pod['itunes_id'] = int(podcast['id']['attributes']['im:id'])
     podcast_list.append(pod)
-
+  
   truncate_length = 45
 
   for podcast in podcast_list:
@@ -137,7 +137,7 @@ def show(id):
     podcast['truncated_summary'] = ""
     if len(podcast['split_up']) < truncate_length:
       podcast['truncated_summary'] = podcast['Summary']
-    else:
+    else: 
       for x in range(0,truncate_length):
         podcast['shortened_arr'].append(podcast['split_up'][x])
         podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
@@ -175,7 +175,7 @@ def show(id):
   podcasts_to_render=random.sample(current_user.podcasts.all(),number_of_pods_to_display)
 
   return render_template('users/show.html', user=current_user, podcasts_to_render=podcasts_to_render)
-
+  
 
 ################# FOR USERNAMES ###############
 
@@ -239,8 +239,7 @@ def edit_preferences(id):
   form.set_choices()
   return render_template('users/edit_preferences.html', form = form, id=current_user.id)
 
-# This route should probably be /<int:id>/preferences I'm not sure why there are
-# two preferences routes
+
 @users_blueprint.route('/<int:id>/preferences/show', methods=['GET','PATCH', 'DELETE'])
 @login_required
 @ensure_correct_user
@@ -261,14 +260,14 @@ def show_preferences(id):
     return redirect(url_for('users.request_data',id=current_user.id))
   return render_template('preferences/show.html', id=current_user.id)
 
-# Do not leave commented out code in your code base.
+
 # if request.method=='POST':
 #     for preference in form.preference.data:
 #       current_user.preferences.append(Preference.query.get(preference))
-
+    
 
 ################# ROUTE FOR HANDLING REQUESTS TO ITUNES API ################
-pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Performing Arts':1405, 'Visual Arts': 1406, 'Fashion & Beauty':1459, 'Comedy':1303, 'Education':1304, 'K-12':1415,
+pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Performing Arts':1405, 'Visual Arts': 1406, 'Fashion & Beauty':1459, 'Comedy':1303, 'Education':1304, 'K-12':1415, 
             'Higher Education':1416, 'Educational Technology': 1468, 'Language Courses': 1469,'Training':1470, 'Kids & Family': 1305, 'Health':1307, 'Fitness & Nutritition': 1417, 'Self-Help':1420,
             'Sexuality':1421, 'Alternative Health': 1481, 'TV % Film': 1309, 'Music': 1310, 'News & Politics': 1311, 'Religion & Spirituality': 1314, 'Buddhism': 1438, 'Christianity':1439, 'Islam': 1440,
             'Judaism': 1441, 'Spirituality': 1444, 'Hinduism': 1463, 'Other': 1464, 'Science & Medicine': 1315, 'Natural Sciences': 1477, 'Medicine': 1478, 'Social Sciences': 1479, 'Sports & Recreation': 1316,
@@ -277,7 +276,7 @@ pref_map = {'Arts':1301, 'Food':1306, 'Literature':1401, 'Design':1402, 'Perform
             'Other Games':1461, 'Society & Culture':1324, 'Personal Journals':1302, "Places & Travels":1320, 'Philopsphy':1443, "History":1462, 'Government & Organizations':1325, 'National':1473, 'Regional': 1474,
             "Local": 1475, "Non-Profit": 1476}
 
-## other refers to other religions
+## other refers to other religions 
 
 @users_blueprint.route('/<int:id>/recommendations/', methods=['GET'])
 @login_required
@@ -314,7 +313,7 @@ def request_data(id):
     podcast['truncated_summary'] = ""
     if len(podcast['split_up']) < truncate_length:
       podcast['truncated_summary'] = podcast['Summary']
-    else:
+    else: 
       for x in range(0,truncate_length):
         podcast['shortened_arr'].append(podcast['split_up'][x])
         podcast['truncated_summary'] = " ".join(podcast['shortened_arr'])+ "..."
@@ -332,9 +331,9 @@ def request_data(id):
       for x in range(0, max_char_length-1):
        podcast['chars_split'].append(podcast['summary_split_chars'][x])
        podcast['display_summary'] = "".join(podcast['chars_split'])+ "..."
-
-################# CREATING INSTANCES of PODCAST class to be placed as property on each current user #############
-
+  
+################# CREATING INSTANCES of PODCAST class to be placed as property on each current user ############# 
+  
   for pod in podcast_data:
     podcast_already_in_table = Podcast.query.filter_by(itunes_id = pod['itunes_id']).first()
     if podcast_already_in_table == None:
@@ -359,9 +358,9 @@ def request_data(id):
   else:
     podcasts_to_render = random.sample(current_user.podcasts.all(),number_of_pods_to_render)
 
-
+  
   more_podcasts = [podcast for podcast in podcast_data if x not in podcasts_to_render]
-
+  
   return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render, more_podcasts=more_podcasts)
 
 ############## ADDING FUNCTIONALITY FOR LIKING PODCASTS ########
@@ -375,7 +374,6 @@ def like_pod(podcast_id):
   return "done"
   # redirect(url_for('users.request_data',id=current_user.id))
 
-### seems like this should be a GET for /liked
 @users_blueprint.route('/liked-podcasts', methods=['GET'])
 @login_required
 def liked_podcasts():
@@ -386,8 +384,12 @@ def liked_podcasts():
 
 
 
-  # Same here, if you're not using this code, you shouldn't commit it.
+
   # titles = [item['im:name']['label']for item in playlist]
   # summaries = [item['summary']['label']for item in playlist]
   # podcast_URL = [item['link']['attributes']['href']for item in playlist]
   # picture_URL = [item['im:image'][2]['label']for item in playlist]
+  
+  
+   
+  
