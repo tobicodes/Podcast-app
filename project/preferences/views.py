@@ -9,8 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 
 ### have only the edit and delete preferences routes here..
-# It doesn't look like this is being used at all.  You should remove it or refactor
-# your code and put some preferences here.
+
 preferences_blueprint = Blueprint(
   'preferences',
   __name__,
@@ -35,3 +34,5 @@ def ensure_correct_user(fn):
 #   if request.method ==b'DELETE':
 #     pass
 #   return render_template('preferences/show.html')
+
+

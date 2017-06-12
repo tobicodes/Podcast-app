@@ -6,24 +6,6 @@ from flask_bcrypt import Bcrypt
 import os
 
 
-###
-# General feedback
-#
-# * Make sure you have a readme that tells me something about your app and how
-# get it setup and run locally.
-#
-# * Do not commit .pyc files.  You should have a .gitignore that ignores .pyc
-# and the __pycache__ folder
-#
-# * I would think over the UI flow a little more.  I find it hard to figure out
-# how to get where I want to go.  Maybe have a nav with all the page types that
-# I can get to.
-#
-# * The routes inside of user seem not RESTful.  Since it's a many to many between
-# users and preferences you probably don't need a nested route.
-#
-####
-
 app = Flask(__name__)
 modus = Modus(app)
 
