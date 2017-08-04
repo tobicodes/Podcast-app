@@ -360,6 +360,7 @@ def request_data(id):
 
   
   more_podcasts = [podcast for podcast in podcast_data if x not in podcasts_to_render]
+  from IPython import embed; embed()
   
   return render_template('users/recommendations.html',podcasts_to_render=podcasts_to_render, more_podcasts=more_podcasts)
 
